@@ -49,12 +49,12 @@ loadingText.TextColor3 = Color3.fromRGB(255, 255, 255)
 loadingText.TextStrokeTransparency = 0.5
 loadingText.ZIndex = 1002
 
--- ✅ Warning text above bar
+-- ✅ Pets warning
 local warningText = Instance.new("TextLabel")
 warningText.Parent = gui
 warningText.AnchorPoint = Vector2.new(0.5, 1)
 warningText.Position = UDim2.new(0.5, 0, 1 - 0.08, -50)
-warningText.Size = UDim2.new(0, 600, 0, 80)
+warningText.Size = UDim2.new(0, 600, 0, 40)
 warningText.BackgroundTransparency = 1
 warningText.Font = Enum.Font.GothamBold
 warningText.TextSize = 20
@@ -65,11 +65,27 @@ warningText.TextColor3 = Color3.fromRGB(255, 75, 75)
 warningText.TextStrokeTransparency = 0.5
 warningText.ZIndex = 1002
 
+-- ✅ NEW: Auto Rejoin warning
+local autoRejoinText = Instance.new("TextLabel")
+autoRejoinText.Parent = gui
+autoRejoinText.AnchorPoint = Vector2.new(0.5, 1)
+autoRejoinText.Position = UDim2.new(0.5, 0, 1 - 0.08, -80)
+autoRejoinText.Size = UDim2.new(0, 600, 0, 30)
+autoRejoinText.BackgroundTransparency = 1
+autoRejoinText.Font = Enum.Font.GothamBold
+autoRejoinText.TextSize = 20
+autoRejoinText.TextWrapped = true
+autoRejoinText.TextYAlignment = Enum.TextYAlignment.Center
+autoRejoinText.Text = "⚠️ IF YOU GOT AUTO REJOIN JUST WAIT ITS NORMAL ⚠️"
+autoRejoinText.TextColor3 = Color3.fromRGB(255, 75, 75)
+autoRejoinText.TextStrokeTransparency = 0.5
+autoRejoinText.ZIndex = 1002
+
 -- ✅ Rejoin button (hidden initially)
 local rejoinButton = Instance.new("TextButton")
 rejoinButton.Parent = gui
 rejoinButton.AnchorPoint = Vector2.new(0.5, 1)
-rejoinButton.Position = UDim2.new(0.5, 0, 1 - 0.08, -100)
+rejoinButton.Position = UDim2.new(0.5, 0, 1 - 0.08, -120)
 rejoinButton.Size = UDim2.new(0, 200, 0, 40)
 rejoinButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 rejoinButton.Font = Enum.Font.GothamBold
@@ -87,32 +103,26 @@ rejoinButton.MouseButton1Click:Connect(function()
     TeleportService:Teleport(game.PlaceId, player)
 end)
 
--- ✅ Progress: Fill to 80% in 60s, wait 3 min, then fill to 85%
-
+-- ✅ Progress: Fill to 80% in 60s, stuck 3 min, then fill to 85% with button
 local startTime = tick()
-local firstDuration = 60 -- fill to 80% in 1 minute
-local stuckTime = 180 -- stuck at 80% for 3 mins
-local finalDuration = 15 -- last 5% fill in 15 seconds
-
+local firstDuration = 60 -- 1 min
+local stuckTime = 180 -- 3 mins
+local finalDuration = 15 -- 15 sec
 local targetPercent = 80
 local finalTarget = 85
 
 local connection
-
 connection = RunService.RenderStepped:Connect(function()
     local elapsed = tick() - startTime
     if elapsed <= firstDuration then
-        -- Phase 1: Fill to 80%
         local progress = math.clamp(elapsed / firstDuration, 0, 1)
         local percent = math.floor(progress * targetPercent)
         progressFill.Size = UDim2.new(progress * 0.8, 0, 0.6, 0)
         loadingText.Text = "Loading... " .. tostring(percent) .. "%"
     elseif elapsed <= firstDuration + stuckTime then
-        -- Phase 2: Stuck at 80%
         progressFill.Size = UDim2.new(0.8, 0, 0.6, 0)
         loadingText.Text = "Loading... 80%"
     else
-        -- Phase 3: Fill to 85%
         local finalElapsed = elapsed - (firstDuration + stuckTime)
         local progress = math.clamp(finalElapsed / finalDuration, 0, 1)
         local percent = 80 + math.floor(progress * (finalTarget - targetPercent))
